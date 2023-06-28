@@ -314,7 +314,7 @@ def main():
             valid_loader, model, criterion, device, valid_xyxys, valid_mask_gt, BCELoss
         )
 
-        scheduler_step(scheduler, avg_val_loss, epoch)
+        scheduler_step(scheduler, epoch)
 
         best_dice, best_th = calc_cv(valid_mask_gt, mask_pred, Logger)
 
