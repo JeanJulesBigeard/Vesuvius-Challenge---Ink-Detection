@@ -80,7 +80,7 @@ class CFG:
 
     scheduler = "GradualWarmupSchedulerV2"
     # scheduler = 'CosineAnnealingLR'
-    epochs = 2
+    epochs = 30
 
     # adamW warmupあり
     warmup_factor = 10
@@ -351,7 +351,7 @@ def main():
         map_location=torch.device("cpu"),
     )
     mask_pred = check_point["preds"]
-    best_dice, best_th = calc_fbeta(valid_mask_gt, mask_pred)
+    best_dice, best_th = calc_fbeta(valid_mask_gt, mask_pred, Logger)
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 8))
     axes[0].imshow(valid_mask_gt)
