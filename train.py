@@ -358,6 +358,8 @@ def main():
     axes[1].imshow(mask_pred)
     axes[2].imshow((mask_pred >= best_th).astype(int))
 
+    fig.savefig(CFG.figures_dir + "/result_best_model.png")
+
 
 if __name__ == "__main__":
     main()
