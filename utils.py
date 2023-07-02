@@ -85,3 +85,49 @@ def calc_cv(mask_gt, mask_pred, Logger):
     best_dice, best_th = calc_fbeta(mask_gt, mask_pred, Logger)
 
     return best_dice, best_th
+
+
+# ref.: https://www.kaggle.com/stainsby/fast-tested-rle
+def rle(img):
+    """
+    img: numpy array, 1 - mask, 0 - background
+    Returns run length as string formated
+    """
+    pixels = img.flatten()
+    # pixels = (pixels >= thr).astype(int)
+
+    pixels = np.concatenate([[0], pixels, [0]])
+    runs = np.where(pixels[1:] != pixels[:-1])[0] + 1
+    runs[1::2] -= runs[::2]
+    return " ".join(str(x) for x in runs)
+
+
+def normalization(x):
+    """input.shape=(batch,f1,f2,...)"""
+    # [batch,f1,f2]->dim[1,2]
+    dim = list(range(1, x.ndim))
+    mean = x.mean(dim=dim, keepdim=True)
+    std = x.std(dim=dim, keepdim=True)
+    return (x - mean) / (std + 1e-9)
+
+
+def get_folder_size(folder_path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+
+def TTA(x, model):
+    # x.shape=(batch,c,h,w)
+    shape = x.shape
+    x = [x, *[torch.rot90(x, k=i, dims=(-2, -1)) for i in range(1, 4)]]
+    x = torch.cat(x, dim=0)
+    x = model(x)
+    x = torch.sigmoid(x)
+    x = x.reshape(4, shape[0], *shape[2:])
+    x = [torch.rot90(x[i], k=-i, dims=(-2, -1)) for i in range(4)]
+    x = torch.stack(x, dim=0)
+    return x.mean(0)

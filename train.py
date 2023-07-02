@@ -14,6 +14,7 @@ from loss import get_scheduler, AverageMeter, criterion, scheduler_step
 import segmentation_models_pytorch as smp
 import cv2
 import matplotlib.pyplot as plt
+import cupy as cp
 
 
 def get_transforms(data, cfg):
@@ -65,8 +66,8 @@ class CFG:
 
     # ============== model cfg =============
     model_name = "Unet"
-    backbone = "efficientnet-b0"
-    # backbone = 'se_resnext50_32x4d'
+    # backbone = "efficientnet-b0"
+    backbone = "resnet3d"
 
     in_chans = 6  # 65
     # ============== training cfg =============
